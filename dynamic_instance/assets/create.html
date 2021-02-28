@@ -1,0 +1,48 @@
+{% extends "admin/challenges/create.html" %}
+
+{% block header %}
+<div class="alert alert-secondary" role="alert">
+	此类题目采用沙漏计分法,即一血获取全部分数,题目解决人数每增加一人,答对题目所获得的分数递减,直至减至所设的下限为止.
+	<br/>The hourglass-scoring method is used for this kind of challenges, that is to say, all the scores are obtained by first solver. Every time the number of challenge solvers increases, the score obtained by answering the right flag decreases until it reaches the lower limit 
+</div>
+{% endblock %}
+
+
+{% block value %}
+<div class="form-group">
+	<label for="value">Initial Value<br>
+		<small class="form-text text-muted">
+			This is how many points the challenge is worth initially.
+		</small>
+	</label>
+	<input type="number" class="form-control" name="value" placeholder="Enter value" required>
+
+</div>
+
+<div class="form-group">
+	<label for="value">Decay each increase<br>
+		<small class="form-text text-muted">
+			The decay for each increase of solves.
+		</small>
+	</label>
+	<input type="number" class="form-control" name="per_decay" value="1" required>
+</div>
+
+<div class="form-group">
+	<label for="value">Minimum Value<br>
+		<small class="form-text text-muted">
+			This is the lowest that the challenge can be worth
+		</small>
+	</label>
+	<input type="number" class="form-control" name="minimum" placeholder="Enter minimum value" required>
+</div>
+<div class="form-group">
+	<label for="value">Dynamic Challenge Image Name<br>
+	</label>
+	<input type="text" class="form-control" name="ChallengeImageName" placeholder="Enter Challenge Image Name" required>
+</div>
+{% endblock %}
+
+{% block type %}
+<input type="hidden" value="dynamic_instance" name="type" id="chaltype">
+{% endblock %}

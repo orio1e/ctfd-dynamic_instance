@@ -1,0 +1,4 @@
+{
+	"name":"dynamic_instance",
+	"route":"/plugins/dynamic_instance/config"
+}

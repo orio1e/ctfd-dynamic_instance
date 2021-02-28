@@ -1,0 +1,2 @@
+docker==4.4.1
+flask_apscheduler==1.11.0

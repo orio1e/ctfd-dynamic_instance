@@ -1,0 +1,296 @@
+{% extends "admin/base.html" %} 
+{% block stylesheets %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('views.themes', theme='admin', path='css/codemirror.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+	<div class="container">
+		<h1>Dynamic Instance Config</h1><br>
+		<h4>动态靶机设置</h4>
+	</div>
+</div>
+<div >
+		<h3>&nbsp;&nbsp;Server list&nbsp;&nbsp;&nbsp;服务器列表</h3><br>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<table id="serverstable" class="table table-striped border">
+			<thead>
+			<tr>
+				<th></th>
+				<th class="sort-col text-center"><b>Id</b></th>
+				<th class="sort-col"><b>Host</b></th>
+				<th class="sort-col"><b>Tag</b></th>
+				<th class="d-none d-md-table-cell d-lg-table-cell sort-col"><b>OS</b></th>
+				<th class="d-none d-md-table-cell d-lg-table-cell sort-col text-center"><b>Number of CPUs</b></th>
+				<th class="d-none d-md-table-cell d-lg-table-cell sort-col text-center"><b>Memory Total</b></th>
+				<th class="d-none d-md-table-cell d-lg-table-cell sort-col text-center"><b>Number of Images</b></th>
+			</tr>
+			</thead>
+			<tbody>
+			
+			{% for server in servers %}
+				<tr>
+					<td class="d-block border-right text-center" data-checkbox>
+						{%if server[0]== 1%}
+						<button type="button" onclick="delete_server({{server[0]}})" class="btn btn-outline-danger" data-toggle="tooltip" title="" id="challenges-delete-button" data-original-title="Delete Server">
+							<i class="btn-fa fas fa-trash-alt"></i>
+						</button>
+						{% endif %}
+					</td>
+					<td class="text-center">{{server[0]}}</td>
+					<td>{{server[1]}}</td>
+					<td class="d-none d-md-table-cell d-lg-table-cell">{{server[3]}}</td>
+					<td class="d-none d-md-table-cell d-lg-table-cell text-center">{{server[4]}}</td>
+					<td class="d-none d-md-table-cell d-lg-table-cell text-center">{{server[5]}}</td>
+					<td class="d-none d-md-table-cell d-lg-table-cell text-center">
+						{{server[6]}}mb
+					</td>
+					<td class="d-none d-md-table-cell d-lg-table-cell text-center">
+						{{server[7]}}
+					</td>
+				</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+	</div>
+</div>
+<div>
+	<h3>&nbsp;&nbsp;Chanllange Images list&nbsp;&nbsp;&nbsp;题目镜像列表</h3><br>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<table id="challenges" class="table table-striped border">
+			<thead>
+			<tr>
+				<th></th>
+				<th class="sort-col text-center"><b>Id</b></th>
+				<th class="sort-col"><b>Name</b></th>
+				<th class="d-none d-md-table-cell d-lg-table-cell sort-col"><b>RepoTags</b></th>
+				<th class="d-none d-md-table-cell d-lg-table-cell sort-col"><b>ImageId</b></th>
+				<th class="d-none d-md-table-cell d-lg-table-cell sort-col"><b>Created</b></th>
+				<th class="d-none d-md-table-cell d-lg-table-cell sort-col"><b>Size</b></th>
+				<th class="d-none d-md-table-cell d-lg-table-cell sort-col text-center"><b>ExposedPorts</b></th>
+				<th class="d-none d-md-table-cell d-lg-table-cell sort-col text-center"><b>CPU Limit</b></th>
+				<th class="d-none d-md-table-cell d-lg-table-cell sort-col text-center"><b>Memory Limit</b></th>
+			</tr>
+			</thead>
+			<tbody>
+			
+			{% for image in challenge_images %}
+			<tr>
+				<td class="d-block border-right text-center" data-checkbox>
+						<button type="button" onclick="delete_image({{image[0]}})" class="btn btn-outline-danger" data-toggle="tooltip" title="" id="challenges-delete-button" data-original-title="Delete Server">
+							<i class="btn-fa fas fa-trash-alt"></i>
+						</button>
+				</td>
+				<td class="text-center">{{image[0]}}</td>
+				<td>{{image[1]}}</td>
+				<td class="d-none d-md-table-cell d-lg-table-cell">{{image[2]}}</td>
+				<td class="d-none d-md-table-cell d-lg-table-cell text-center">{{image[3][8:15]}}....</td>
+				<td class="d-none d-md-table-cell d-lg-table-cell text-center">{{image[4]}}</td>
+				<td class="d-none d-md-table-cell d-lg-table-cell text-center">
+					{{image[5]}}mb
+				</td>
+				<td class="d-none d-md-table-cell d-lg-table-cell text-center">
+					{{image[6]}}
+				</td>
+				<td class="d-none d-md-table-cell d-lg-table-cell text-center">
+					{{image[7]}}
+				</td>
+				<td class="d-none d-md-table-cell d-lg-table-cell text-center">
+					{{image[8]}}mb
+				</td>
+			</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+	</div>
+</div>
+<br><br><br><br><br>
+
+<div >
+	<h3>&nbsp;&nbsp;Add Docker Remote API</h3> 
+	<br>
+</div>
+<div class="col-md-10">
+<form method="POST" id="addserverform" >
+	<div class="container">
+		<div class="form-group">
+			<label>
+				Docker Remote API Host:<br>
+				<small class="form-text text-muted">
+					The remote tcp url Like "tcp://10.20.22.175:2375"
+				</small>
+			</label>
+			<input type="text" class="form-control" name="socket" placeholder="Enter Remote Url">
+			<label>
+				Tag:<br>
+				<small class="form-text text-muted">
+					Any Tag
+				</small>
+			</label>
+			<input type="text" class="form-control" name="tag" placeholder="Any Tag">
+		</div>
+		<input hidden=True name="type" value="new_server">
+		
+		<div class="form-group">
+			<label>
+				TSL Client Cert:<br>
+			</label>
+		
+			<textarea   class="form-control " name="cert" placeholder=
+			"-----BEGIN CERTIFICATE-----
+MIIFVzCCAz+gAwIBAgIJAMd2FE4eI9j/M........
+-----END CERTIFICATE-----
+			"></textarea>
+		</div>
+		<div class="form-group">
+			<label>
+				TSL Client Key:<br>
+			</label>
+			<textarea   class="form-control " name="key" placeholder=
+			"-----BEGIN CERTIFICATE-----
+MIIFVzCCAz+gAwIBAgIJAMd2FE4eI9j/M........
+-----END CERTIFICATE-----
+			"></textarea>
+		</div>
+		</form>
+		<div class="form-group">
+			<button type="button" id="addserver" class="btn btn-primary float-right ">Add</button>
+		</div>
+		
+	</div>
+
+</div>
+<br><br><br><br><br>
+<div >
+	<h3>&nbsp;&nbsp;Create Challenge Image</h3><br>
+</div>
+<div class="col-md-10">
+<form method="POST" id="createimageform" >
+	<div class="container">
+		<div class="form-group">
+			<label>
+				Name  :<br>
+				<small class="form-text text-muted">
+					Chanllange Image Name
+				</small>
+			</label>
+			<input type="text" class="form-control" name="name" placeholder="web1">
+
+		</div>
+		<div class="form-group">
+			<label>
+				Reponstory:Tag  :<br>
+				<small class="form-text text-muted">
+					Reponstory:Tag(default latest) on dockerhub
+				</small>
+			</label>
+			<input type="text" class="form-control" name="RepoTags" placeholder="Reponstory:Tag">
+
+		</div>
+		<div class="form-group">
+			<label>
+				CPU Count Limit:<br>
+			</label>
+			<input type="text" class="form-control" value="1" name="cpuli" placeholder="0.5">
+
+		</div>
+		<div class="form-group">
+			<label>
+				Memory Limit:<br>
+			</label>
+			<input type="number" value=128 class="form-control" name="memli" >mb
+
+		</div>
+		<div class="form-group">
+			<label>
+				Pull Image<br>
+			</label>
+			<small class="form-text text-muted">
+				The server which to pull the Image
+			</small>
+			<select class="form-control custom-select" name="pullimage">
+				{% for server in servers %}
+				<option value="{{server[3]}}">{{server[3]}}</option>
+				{% endfor %}
+
+			</select>
+
+		</div>
+		<div class="form-group">
+			<label>
+				ExposedPorts:<br>
+			</label>
+			<small class="form-text text-muted">
+				Python Format: [80,22,443]
+			</small>
+			<input type="text" class="form-control" name="exposedports" value="[80,]">
+
+		</div>
+	</div>
+	<input name="type" value="new_img" hidden>
+	<div class="form-group">
+		<button id="createimage" type="button" class="btn btn-primary float-right create-challenge-submit">Create</button>
+	</div>
+
+</form>
+</div>
+<br><br><br><br><br>
+<div >
+	<h3>&nbsp;&nbsp;Config</h3><br>
+</div>
+<div class="col-md-10">
+	<form method="POST" id="configform">
+		<div class="container">
+			<div class="form-group">
+				
+				<input type="checkbox" name="docker" value="1" checked="True" class="form-check-input" >
+				<label>
+					Load Local Docker Server:<br>
+				</label>
+				<small class="form-text text-muted">
+					使用本地docker服务
+				</small>
+			</div>
+			<div class="form-group">
+				<label>
+					Instance Survival Time:<br>
+				</label>
+				<small class="form-text text-muted">
+					实例存活时间
+				</small>
+				<input type="number" class="form-control" name="survtime" value="120">Minutes
+			</div>
+			<div class="form-group">
+				<label>
+					Each extension time:<br>
+				</label>
+				<small class="form-text text-muted">
+					实例每次延长时间
+				</small>
+				<input type="number" class="form-control" name="exttime" value="15">Minutes
+			</div>
+			<div class="form-group">
+				<label>
+					Max Survival Time:<br>
+				</label>
+				<small class="form-text text-muted">
+					实例最大存活时间
+				</small>
+				<input type="number" class="form-control" name="maxsurtime" value="300">Minutes
+				<input type="hidden" value="{{ nonce }}" name="nonce" id="nonce">
+			</div>
+			<div class="form-group">
+				<button type="button" id="setconfig"  class="btn btn-primary float-right create-challenge-submit">Save</button>
+			</div>
+		</div>
+	</form>
+</div>
+
+{%endblock%}
+{% block scripts %}
+    <script defer src="{{ url_for('plugins.dynamic_instance.assets', path='config.js') }}"></script>
+{% endblock %}
