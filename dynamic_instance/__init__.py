@@ -57,6 +57,8 @@ def load(app):
                 client=docker.from_env()
                 info=client.info()
                 host=request.host
+                if ":" in host:
+                    host=host[0:host.index(':')]
                 socket="None"
                 Sys_os=info['OperatingSystem']
                 num_cpu=info['NCPU']
