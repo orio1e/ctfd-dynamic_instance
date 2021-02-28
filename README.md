@@ -44,6 +44,12 @@
     └── utils.py#utils
 ```
 
+​	安装python第三方库: `requirements.txt`在`dynamic_instance`目录下
+
+```shell
+pip install -r requirements.txt
+```
+
 ​	部署时将本目录下的`dynamic_instance`拷贝至CTFd的`CTFd/plugins/`目录下即可
 
 启动ctfd时插件将随之启动
@@ -88,7 +94,7 @@
 
 动态靶机题目需要单独设置的内容如下
 
-![image-20210228162925519](../../Library/Application Support/typora-user-images/image-20210228162925519.png)
+![image-20210228162925519](https://tva1.sinaimg.cn/large/e6c9d24ely1go3fuexzaoj21dc0u0wjo.jpg)
 
 ### 题目界面
 
@@ -96,4 +102,3 @@
 
 ![image-20210228163424274](https://tva1.sinaimg.cn/large/e6c9d24ely1go3evpzr87j20to136gpt.jpg)
 
->>>>>>> Add requirements.txt
