@@ -72,7 +72,7 @@ def remove_timeout():
             cusor.execute("DELETE FROM instances WHERE id={}".format(id))
             conn.commit()
             conn.close()
-
+    conn.close()
     return
 
 

@@ -4,8 +4,11 @@ from CTFd.plugins.challenges import CHALLENGE_CLASSES,BaseChallenge
 from CTFd.utils import user as current_user
 from CTFd.utils.security.csrf import generate_nonce
 from CTFd.utils.decorators import admins_only, authed_only
-from CTFd.models import Challenges, Solves, db
+from CTFd.models import Fails,Flags,Challenges,ChallengeFiles,Tags,Hints, Solves, db
 from CTFd.utils.modes import get_model
+from CTFd.plugins.flags import get_flag_class
+from CTFd.utils.uploads import delete_file
+from CTFd.utils.user import get_ip
 import sqlite3
 import time
 import docker
@@ -153,6 +156,7 @@ class DynamicInstance(BaseChallenge):
 
         challenge.value = value
         db.session.commit()
+        db.session.close()
         return challenge
 
     
@@ -225,9 +229,31 @@ class DynamicInstance(BaseChallenge):
 
         db.session.add(challenge)
         db.session.commit()
+        db.session.close()
 
         return challenge
+    @staticmethod
+    def delete(challenge):
+        """
+        This method is used to delete the resources used by a challenge.
 
+        :param challenge:
+        :return:
+        """
+        Fails.query.filter_by(challenge_id=challenge.id).delete()
+        Solves.query.filter_by(challenge_id=challenge.id).delete()
+        Flags.query.filter_by(challenge_id=challenge.id).delete()
+        files = ChallengeFiles.query.filter_by(challenge_id=challenge.id).all()
+        for f in files:
+            delete_file(f.id)
+        ChallengeFiles.query.filter_by(challenge_id=challenge.id).delete()
+        Tags.query.filter_by(challenge_id=challenge.id).delete()
+        Hints.query.filter_by(challenge_id=challenge.id).delete()
+        DynamicInstanceChallenge.query.filter_by(id=challenge.id).delete()
+        Challenges.query.filter_by(id=challenge.id).delete()
+        db.session.commit()
+        db.session.close()
+        return 
 
 
 

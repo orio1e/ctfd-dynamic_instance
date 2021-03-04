@@ -159,6 +159,7 @@ def load(app):
         server=Servers.query.filter_by(id=server_id).first()
         db.session.delete(server)
         db.session.commit()
+        db.session.close()
         return json.dumps("Delete!")
     @page_blueprint.route('/delimage/<int:image_id>', methods=['DELETE'])  
     @admins_only
@@ -166,6 +167,7 @@ def load(app):
         image=ChallengeImages.query.filter_by(id=image_id).first()
         db.session.delete(image)
         db.session.commit()
+        db.session.close()
         return json.dumps("Delete!")
 
     @authed_only
@@ -214,6 +216,7 @@ def load(app):
         new_instance=Instances(chaid,starttime,endtime,userid,startup,imagename,containername,containerid,host,portmap)
         db.session.add(new_instance)
         db.session.commit()
+        db.session.close()
         #开始启动docker容器
         result=Instance.bootinstance(imagename,new_instance.id)
         return result
@@ -236,6 +239,7 @@ def load(app):
         else:
             db.session.add(instance)
             db.session.commit()
+            db.session.close()
             return json.dumps('More Time')
     @authed_only
     @page_blueprint.route('/reload/<int:challenge_id>', methods=['GET'])
