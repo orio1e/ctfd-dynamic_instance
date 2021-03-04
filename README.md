@@ -62,7 +62,7 @@ pip install -r requirements.txt
 
 以admin用户打开CTFd中的Admin Panel菜单栏,选择plugins中的dynamic_instance
 
-![image-20210228154717387](../../Library/Application Support/typora-user-images/image-20210228154717387.png)
+![image-20210228154717387](https://tva1.sinaimg.cn/large/008eGmZEly1go7zevb2abj31ks07wmy8.jpg)
 
 下拉页面至`Config`部分
 
