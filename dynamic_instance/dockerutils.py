@@ -13,7 +13,7 @@ def randomport(port,serverid):
             occupy=PortOccupy(serverid,out_port)
             db.session.add(occupy)
             db.session.commit()
-            db.session.close()
+    
             return out_port
     else:
         out_port=random.randint(20000,30000)
@@ -24,7 +24,7 @@ def randomport(port,serverid):
             occupy=PortOccupy(serverid,out_port)
             db.session.add(occupy)
             db.session.commit()
-            db.session.close()
+    
             return out_port
 
 class Instance:
@@ -43,7 +43,7 @@ class Instance:
             except:
                 db.session.delete(instance)
                 db.session.commit()
-                db.session.close()
+        
                 return json.dumps("fail: config error")
         else:
             tls_config = docker.tls.TLSConfig(client_cert=(server.client_cert_file, server.client_key_file))
@@ -74,13 +74,13 @@ class Instance:
             instance.containerid=container.id
             db.session.add(instance)
             db.session.commit()
-            db.session.close()
+    
 
             return json.dumps("success")
         except Exception as e:
             db.session.delete(instance)
             db.session.commit()
-            db.session.close()
+    
             return json.dumps("fail: {}".format(e))
     @classmethod
     def destroy_instance(cls,instanceid):
@@ -98,13 +98,18 @@ class Instance:
                 client=docker.DockerClient(base_url=server.host,tls=tls_config)
             except:
                 return json.dumps("fail: config error")
+        portmap=eval(instance.portmap)
+        for port in portmap:
+            occupy=PortOccupy.query.filter_by(port=portmap[port],serverid=server.id).delete()
+            db.session.commit()
+
         try:
             rm=client.containers.get(instance.containerid)
             rm.stop()
             rm.remove()
             db.session.delete(instance)
             db.session.commit()
-            db.session.close()
+    
             return json.dumps("Remove success!")
         except Exception as e:
                 return json.dumps("fail: container destroy error: {}".format(e))
@@ -139,7 +144,7 @@ class Instance:
             instance.containerid=container.id
             db.session.add(instance)
             db.session.commit()
-            db.session.close()
+    
             
             return json.dumps("Reload success!")
         except Exception as e:

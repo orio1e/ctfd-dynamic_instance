@@ -112,7 +112,7 @@ class DynamicInstanceChallenge(Challenges):
     minimum=db.Column(db.Float)
     def __init__(self, *args, **kwargs):
         super(DynamicInstanceChallenge, self).__init__(**kwargs)
-        self.initial = kwargs["value"]
+        self.initial = float(kwargs["value"])
 
 class DynamicInstance(BaseChallenge):
     id = "dynamic_instance"  # Unique identifier used to register challenges
@@ -152,11 +152,11 @@ class DynamicInstance(BaseChallenge):
         if value<challenge.minimum:
             value=challenge.minimum
 
-        value = math.ceil(value)
+        value = math.ceil(float(value))
 
         challenge.value = value
         db.session.commit()
-        db.session.close()
+
         return challenge
 
     
@@ -205,7 +205,7 @@ class DynamicInstance(BaseChallenge):
 
         for attr, value in data.items():
             # We need to set these to floats so that the next operations don't operate on strings
-            if attr in ("now_score", "minimum", "per_decay"):
+            if attr in ("initial", "minimum", "per_decay"):
                 value = float(value)
             setattr(challenge, attr, value)
 
@@ -225,11 +225,13 @@ class DynamicInstance(BaseChallenge):
         :return:
         """
         data = request.form or request.get_json()
+        data['minimum']=float(data['minimum'])
+        data['per_decay']=float(data['per_decay'])
         challenge = DynamicInstanceChallenge(**data)
 
         db.session.add(challenge)
         db.session.commit()
-        db.session.close()
+
 
         return challenge
     @staticmethod
@@ -252,7 +254,7 @@ class DynamicInstance(BaseChallenge):
         DynamicInstanceChallenge.query.filter_by(id=challenge.id).delete()
         Challenges.query.filter_by(id=challenge.id).delete()
         db.session.commit()
-        db.session.close()
+
         return 
 
 

@@ -157,9 +157,11 @@ def load(app):
     @admins_only
     def delserver(server_id):
         server=Servers.query.filter_by(id=server_id).first()
+        if server.tag!="local":
+            delete(server.client_cert_file)
+            delete(server.client_key_file)
         db.session.delete(server)
         db.session.commit()
-        db.session.close()
         return json.dumps("Delete!")
     @page_blueprint.route('/delimage/<int:image_id>', methods=['DELETE'])  
     @admins_only
@@ -167,7 +169,6 @@ def load(app):
         image=ChallengeImages.query.filter_by(id=image_id).first()
         db.session.delete(image)
         db.session.commit()
-        db.session.close()
         return json.dumps("Delete!")
 
     @authed_only
@@ -216,7 +217,6 @@ def load(app):
         new_instance=Instances(chaid,starttime,endtime,userid,startup,imagename,containername,containerid,host,portmap)
         db.session.add(new_instance)
         db.session.commit()
-        db.session.close()
         #开始启动docker容器
         result=Instance.bootinstance(imagename,new_instance.id)
         return result
