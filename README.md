@@ -3,6 +3,8 @@
 
 ​		本人是一个菜鸡ctf-web选手,由于会在buuctf,bugku这样的ctf靶场做题,所以看着人家的动态靶机很眼馋.借鉴了buu的赵师傅的思路,自己也写了一个,功能上还比较简单,题目采用了沙漏积分,即一血获取全部分数,题目解决人数每增加一人,答对题目所获得的分数递减,直至减至所设的下限为止
 
+​	
+
 ### 界面
 
 ![image-20210228151451653](https://tva1.sinaimg.cn/large/e6c9d24ely1go3etl77quj21h90u0tg7.jpg)
@@ -13,15 +15,15 @@
 
 ![image-20210228151550144](https://tva1.sinaimg.cn/large/e6c9d24ely1go3ev62nm1j21pd0u0di2.jpg)
 
-### 部署
+### 部署 deploy
 
-文件结构:
+文件结构 file structure :
 
 ```shell
 ├── README.md
 └── dynamic_instance #插件目录
-    ├── __init__.py #定义了路由
-    ├── assets #前端
+    ├── __init__.py #定义了路由 Routes
+    ├── assets #前端 Front
  	  │   ├── config.js
     │   ├── create.html
     │   ├── create.js
