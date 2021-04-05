@@ -19,13 +19,7 @@ import json
 import hashlib
 import os
 import math
-
-
 challenge_model = DynamicInstance
-
-
-
-
 def load(app):
     app.db.create_all()
     page_blueprint = Blueprint(
@@ -41,8 +35,7 @@ def load(app):
     scheduler.add_job(func=remove_timeout,id='remove_timeout',args=None,trigger='interval',seconds=60,replace_existing=True)
     scheduler.init_app(app=app)
     scheduler.start()
-
-    @admins_only
+    #主目录
     @page_blueprint.route('/config', methods=['GET','POST'])
     @admins_only
     def dynamic_instance_config():
@@ -89,8 +82,9 @@ def load(app):
         servers=cusor.fetchall()
         conn.commit()
         conn.close()
-        return render_template('dynamic_instance.html',nonce=generate_nonce(),challenge_images=challenge_images,servers=servers)
-    
+        instances=Instances.query.all()
+        return render_template('dynamic_instance.html',nonce=generate_nonce(),challenge_images=challenge_images,servers=servers,instances=instances)
+    #增加 新服务器 或新镜像
     @page_blueprint.route('/new', methods=['POST','GET'])  
     @admins_only
     def dynamic_instance_new():
@@ -153,6 +147,7 @@ def load(app):
             #pull_image(pullimage,RepoTags)
             return json.dumps("success!")
         return json.dumps("Nothing")
+    #删除服务器
     @page_blueprint.route('/delserver/<int:server_id>', methods=['DELETE'])  
     @admins_only
     def delserver(server_id):
@@ -163,6 +158,7 @@ def load(app):
         db.session.delete(server)
         db.session.commit()
         return json.dumps("Delete!")
+    #删除镜像
     @page_blueprint.route('/delimage/<int:image_id>', methods=['DELETE'])  
     @admins_only
     def delimage(image_id):
@@ -170,82 +166,84 @@ def load(app):
         db.session.delete(image)
         db.session.commit()
         return json.dumps("Delete!")
+    #删除靶机
+    @page_blueprint.route('/delinstance/<int:instance_id>', methods=['DELETE'])  
+    @admins_only
+    def delinstance(instance_id):
+        result=Instance.destroy_instance(instance_id)
+        return result
 
+
+    #为用户 创建 重载 延长 销毁靶机
     @authed_only
-    @page_blueprint.route('/instanceinfo/<int:challenge_id>', methods=['GET'])
-    def instanceinfo(challenge_id):
-        result={"type":""}
+    @page_blueprint.route('/instance/<int:challenge_id>', methods=['GET'])
+    def instance(challenge_id):
+        type=request.args.get('type')
         userid=current_user.get_current_user_attrs().id
-        instance=Instances.query.filter_by(userid=userid,chaid=challenge_id).first()
-        if instance:
-            if instance.startup:
-                result['type']="booted"
-                result['starttime']=instance.starttime
-                result['endtime']=instance.endtime
-                result['host']=instance.host
-                result['portmap']=eval(instance.portmap)
-                if result['portmap']['80/tcp']:
-                    result['host']="http://"+result['host']+":"+str(result['portmap']['80/tcp'])
-                return json.dumps(result)
+        if type=="info":
+            result={"type":""}
+            instance=Instances.query.filter_by(userid=userid,chaid=challenge_id).first()
+            if instance:
+                if instance.startup:
+                    result['type']="booted"
+                    result['starttime']=instance.starttime
+                    result['endtime']=instance.endtime
+                    result['host']=instance.host
+                    result['portmap']=eval(instance.portmap)
+                    if result['portmap']['80/tcp']:
+                        result['host']="http://"+result['host']+":"+str(result['portmap']['80/tcp'])
+                    return json.dumps(result)
 
+                else:
+                    result['type']="booting"
+                    return json.dumps(result)
             else:
-                result['type']="booting"
-                return json.dumps(result)
-        else:
-            result['type']="notboot"
-        return json.dumps(result)
-    @authed_only
-    @page_blueprint.route('/bootinstance/<int:challenge_id>', methods=['GET'])
-    def bootinstance(challenge_id):
-        print("bootinstance")
-        userid=current_user.get_current_user_attrs().id
-        had=Instances.query.filter_by(userid=userid).first()
-        if had:
-            return json.dumps("You can only have one instance at the same time!")
-        config=load_config()
-        chal=DynamicInstanceChallenge.query.filter_by(id=challenge_id).first()
-        chaid=chal.id
-        starttime=time.time()
-        endtime=time.time()+(int(config['survtime'])*60)
-        
-        startup=0
-        imagename=chal.ChallengeImageName
-        containername=f"{chaid}_{userid}_{imagename}"
-        containerid=""#在实例启动时赋值
-        host=""#在实例启动时赋值
-        portmap=""#在实例启动时赋值
-        new_instance=Instances(chaid,starttime,endtime,userid,startup,imagename,containername,containerid,host,portmap)
-        db.session.add(new_instance)
-        db.session.commit()
-        #开始启动docker容器
-        result=Instance.bootinstance(imagename,new_instance.id)
-        return result
-    @authed_only
-    @page_blueprint.route('/destroyinstance/<int:challenge_id>', methods=['GET'])
-    def destroyinstance(challenge_id):
-        userid=current_user.get_current_user_attrs().id
-        instance=Instances.query.filter_by(chaid=challenge_id,userid=userid).first()
-        result=Instance.destroy_instance(instance.id)
-        return result
-    @authed_only
-    @page_blueprint.route('/exttime/<int:challenge_id>', methods=['GET'])
-    def exttime(challenge_id):
-        userid=current_user.get_current_user_attrs().id
-        instance=Instances.query.filter_by(chaid=challenge_id,userid=userid).first()
-        config=load_config()
-        instance.endtime=str(float(instance.endtime)+float(config['exttime'])*60)
-        if (float(instance.endtime)-float(instance.starttime))>=(float(config['maxsurtime'])*60):
-            return json.dumps("Max survice time!")
-        else:
-            db.session.add(instance)
+                result['type']="notboot"
+            return json.dumps(result)
+        if type=="boot":
+            print("bootinstance")
+            had=Instances.query.filter_by(userid=userid).first()
+            if had:
+                return json.dumps("You can only have one instance at the same time!")
+            config=load_config()
+            chal=DynamicInstanceChallenge.query.filter_by(id=challenge_id).first()
+            chaid=chal.id
+            starttime=time.time()
+            endtime=time.time()+(int(config['survtime'])*60)
+            startup=0
+            imagename=chal.ChallengeImageName
+            containername=f"{chaid}_{userid}_{imagename}"
+            containerid=""#在实例启动时赋值
+            host=""#在实例启动时赋值
+            portmap=""#在实例启动时赋值
+            new_instance=Instances(chaid,starttime,endtime,userid,startup,imagename,containername,containerid,host,portmap)
+            db.session.add(new_instance)
             db.session.commit()
-            db.session.close()
-            return json.dumps('More Time')
-    @authed_only
-    @page_blueprint.route('/reload/<int:challenge_id>', methods=['GET'])
-    def reload(challenge_id):
-        userid=current_user.get_current_user_attrs().id
-        instance=Instances.query.filter_by(chaid=challenge_id,userid=userid).first()
-        result=Instance.reload(instance.id)
-        return result
+            #开始启动docker容器
+            result=Instance.bootinstance(imagename,new_instance.id)
+            return result
+        if type=="destroy":
+            instance=Instances.query.filter_by(chaid=challenge_id,userid=userid).first()
+            result=Instance.destroy_instance(instance.id)
+            return result
+        if type=="exttime":
+            instance=Instances.query.filter_by(chaid=challenge_id,userid=userid).first()
+            config=load_config()
+            instance.endtime=str(float(instance.endtime)+float(config['exttime'])*60)
+            if (float(instance.endtime)-float(instance.starttime))>=(float(config['maxsurtime'])*60):
+                return json.dumps("Max survice time!")
+            else:
+                db.session.add(instance)
+                db.session.commit()
+                db.session.close()
+                return json.dumps('More Time')
+        if type=="reload":
+            instance=Instances.query.filter_by(chaid=challenge_id,userid=userid).first()
+            result=Instance.reload(instance.id)
+            return result
+        else:
+            return "No Hack!"
     app.register_blueprint(page_blueprint,url_prefix='/plugins/dynamic_instance')
+
+   
+    

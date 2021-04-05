@@ -34,7 +34,7 @@
 				<tr>
 					<td class="d-block border-right text-center" data-checkbox>
 						{%if server[0]== 1%}
-						<button type="button" onclick="delete_server({{server[0]}})" class="btn btn-outline-danger" data-toggle="tooltip" title="" id="challenges-delete-button" data-original-title="Delete Server">
+						<button type="button" onclick="delete_server({{server[0]}})" class="btn btn-outline-danger" data-toggle="tooltip" title="" id="challenges-delete-button" data-original-title="Delete Instance">
 							<i class="btn-fa fas fa-trash-alt"></i>
 						</button>
 						{% endif %}
@@ -288,6 +288,57 @@ MIIFVzCCAz+gAwIBAgIJAMd2FE4eI9j/M........
 			</div>
 		</div>
 	</form>
+</div>
+<br/>
+<br/>
+<br/>
+<br/>
+<div >
+	<h3>&nbsp;&nbsp;Instances&nbsp;&nbsp;&nbsp;存活实例</h3><br>
+</div>
+<div class="row">
+<div class="col-md-12">
+	<table id="serverstable" class="table table-striped border">
+		<thead>
+		<tr>
+			<th></th>
+			<th class="sort-col text-center"><b>Id</b></th>
+			<th class="sort-col"><b>ChanllangeId</b></th>
+			<th class="sort-col"><b>EndTime</b></th>
+			<th class="d-none d-md-table-cell d-lg-table-cell sort-col"><b>UserId</b></th>
+			<th class="d-none d-md-table-cell d-lg-table-cell sort-col text-center"><b>ImageName</b></th>
+			<th class="d-none d-md-table-cell d-lg-table-cell sort-col text-center"><b>ContainerName</b></th>
+			<th class="d-none d-md-table-cell d-lg-table-cell sort-col text-center"><b>Host</b></th>
+			<th class="d-none d-md-table-cell d-lg-table-cell sort-col text-center"><b>PortMap</b></th>
+		</tr>
+		</thead>
+		<tbody>
+		
+		{% for instance in instances %}
+			<tr>
+				<td class="d-block border-right text-center" data-checkbox>
+					<button type="button" onclick="delete_instance({{instance.id}})" class="btn btn-outline-danger" data-toggle="tooltip" title="" id="challenges-delete-button" data-original-title="Delete Server">
+						<i class="btn-fa fas fa-trash-alt"></i>
+					</button>
+				</td>
+				<td class="text-center">{{instance.id}}</td>
+				<td>{{instance.chaid}}</td>
+				<td class="d-none d-md-table-cell d-lg-table-cell">	{{instance.endtime}}</script>
+				</td>
+				<td class="d-none d-md-table-cell d-lg-table-cell text-center">{{instance.userid}}</td>
+				<td class="d-none d-md-table-cell d-lg-table-cell text-center">{{instance.imagename}}</td>
+				<td class="d-none d-md-table-cell d-lg-table-cell text-center">{{instance.containername}}</td>
+				<td class="d-none d-md-table-cell d-lg-table-cell text-center">
+					{{instance.host}}
+				</td>
+				<td class="d-none d-md-table-cell d-lg-table-cell text-center">
+					{{instance.portmap}}
+				</td>
+			</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+</div>
 </div>
 
 {%endblock%}

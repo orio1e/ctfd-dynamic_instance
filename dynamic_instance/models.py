@@ -88,13 +88,14 @@ class Instances(db.Model):
         self.host = host
         self.portmap = portmap
 #端口占用
+'''
 class PortOccupy(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     serverid=db.Column(db.Integer)
     port=db.Column(db.VARCHAR(128))
     def __init__(self,serverid,port):
         self.serverid=serverid
-        self.port = port
+        self.port = port'''
         
 #动态靶机挑战类型
 class DynamicInstanceChallenge(Challenges):

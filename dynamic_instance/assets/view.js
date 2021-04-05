@@ -17,7 +17,7 @@ var instance_endtime;
 
 function info(){
     var challenge_id = parseInt($('#challenge-id').val());
-    var url = "/plugins/dynamic_instance/instanceinfo/" + challenge_id;
+    var url = "/plugins/dynamic_instance/instance/" + challenge_id+"?type=info";
     CTFd.fetch(url, {
         method: 'GET',
         credentials: 'same-origin',
@@ -118,7 +118,7 @@ function boot() {
     '</div></div>');
     askbooting=setInterval(info,1000);
     var challenge_id = parseInt(CTFd.lib.$('#challenge-id').val())
-    CTFd.fetch("/plugins/dynamic_instance/bootinstance/"+challenge_id, {
+    CTFd.fetch("/plugins/dynamic_instance/instance/"+challenge_id+"?type=boot", {
         method: 'GET',
         credentials: 'same-origin',
         headers: {
@@ -144,7 +144,7 @@ function boot() {
 function destroy() {
     askbooting=setInterval(info,1000);
     var challenge_id = parseInt(CTFd.lib.$('#challenge-id').val())
-    CTFd.fetch("/plugins/dynamic_instance/destroyinstance/"+challenge_id, {
+    CTFd.fetch("/plugins/dynamic_instance/instance/"+challenge_id+"?type=destroy", {
         method: 'GET',
         credentials: 'same-origin',
         headers: {
@@ -169,7 +169,7 @@ function destroy() {
 }
 function extense() {
     var challenge_id = parseInt(CTFd.lib.$('#challenge-id').val())
-    CTFd.fetch("/plugins/dynamic_instance/exttime/"+challenge_id, {
+    CTFd.fetch("/plugins/dynamic_instance/instance/"+challenge_id+"?type=exttime", {
         method: 'GET',
         credentials: 'same-origin',
         headers: {
@@ -195,7 +195,7 @@ function extense() {
 }
 function reload() {
     var challenge_id = parseInt(CTFd.lib.$('#challenge-id').val())
-    CTFd.fetch("/plugins/dynamic_instance/reload/"+challenge_id, {
+    CTFd.fetch("/plugins/dynamic_instance/instance/"+challenge_id+"?type=reload", {
         method: 'GET',
         credentials: 'same-origin',
         headers: {

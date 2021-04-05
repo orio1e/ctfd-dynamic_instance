@@ -2,31 +2,30 @@ import docker
 from CTFd.models import Challenges, db
 from .models import *
 import random
+import os 
+import socket
 
-def randomport(port,serverid):
+#获取随机端口
+def randomport(port,ip):
     if port == 80:
         out_port=random.randint(8000,8999)
-        occupy=PortOccupy.query.filter_by(port=out_port,serverid=serverid).first()
-        if occupy:
-            randomport(port,serverid)
-        else:
-            occupy=PortOccupy(serverid,out_port)
-            db.session.add(occupy)
-            db.session.commit()
-    
+        s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+        try:
+            s.connect((ip,int(out_port)))
+            s.shutdown(2)
+            randomport(port,ip)
+        except:
             return out_port
     else:
         out_port=random.randint(20000,30000)
-        occupy=PortOccupy.query.filter_by(port=out_port,serverid=serverid).first()
-        if occupy:
-            randomport(port,serverid)
-        else:
-            occupy=PortOccupy(serverid,out_port)
-            db.session.add(occupy)
-            db.session.commit()
-    
+        s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+        try:
+            s.connect((ip,int(out_port)))
+            s.shutdown(2)
+            randomport(port,ip)
+        except:
             return out_port
-
+#创建 延长 重载 销毁实例
 class Instance:
     
     @classmethod
@@ -57,7 +56,7 @@ class Instance:
             exposedports=eval(image.exposedports)
             portmap={}
             for port in exposedports:
-                out_port=randomport(port,server.id)
+                out_port=randomport(port,server.host)
                 portmap['{}/tcp'.format(port)]=out_port
             container=client.containers.run(
                 image=image.RepoTags,
@@ -99,9 +98,6 @@ class Instance:
             except:
                 return json.dumps("fail: config error")
         portmap=eval(instance.portmap)
-        for port in portmap:
-            occupy=PortOccupy.query.filter_by(port=portmap[port],serverid=server.id).delete()
-            db.session.commit()
 
         try:
             rm=client.containers.get(instance.containerid)
@@ -148,7 +144,9 @@ class Instance:
             
             return json.dumps("Reload success!")
         except Exception as e:
-                return json.dumps("fail: container reload error: {}".format(e))
+            db.session.delete(instance)
+            db.session.commit()
+            return json.dumps("fail: container reload error: {}".format(e))
 
         
         

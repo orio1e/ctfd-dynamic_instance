@@ -107,6 +107,25 @@ function delete_image(image_id) {
 
 
 }
+function delete_instance(instance_id) {
+    CTFd.fetch("/plugins/dynamic_instance/delinstance/"+instance_id, {
+        method: "DELETE",
+        credentials: "same-origin",
+        headers: {
+            'Accept': "application/json",
+            "Content-Type":"application/json"
+          },
+    }).then(response => response.json())
+    .then(json => CTFd.ui.ezq.ezAlert({
+        title: "INFO",
+        body: json,
+        button: "OK"
+    }))
+    .catch(err => console.log('Request Failed', err)); 
+
+
+
+}
 
     
 	
