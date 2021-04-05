@@ -33,22 +33,20 @@
 			{% for server in servers %}
 				<tr>
 					<td class="d-block border-right text-center" data-checkbox>
-						{%if server[0]== 1%}
-						<button type="button" onclick="delete_server({{server[0]}})" class="btn btn-outline-danger" data-toggle="tooltip" title="" id="challenges-delete-button" data-original-title="Delete Instance">
+						<button type="button" onclick="delete_server({{server.id}})" class="btn btn-outline-danger" data-toggle="tooltip" title="" id="challenges-delete-button" data-original-title="Delete Server">
 							<i class="btn-fa fas fa-trash-alt"></i>
 						</button>
-						{% endif %}
 					</td>
-					<td class="text-center">{{server[0]}}</td>
-					<td>{{server[1]}}</td>
-					<td class="d-none d-md-table-cell d-lg-table-cell">{{server[3]}}</td>
-					<td class="d-none d-md-table-cell d-lg-table-cell text-center">{{server[4]}}</td>
-					<td class="d-none d-md-table-cell d-lg-table-cell text-center">{{server[5]}}</td>
+					<td class="text-center">{{server.id}}</td>
+					<td>{{server.host}}</td>
+					<td class="d-none d-md-table-cell d-lg-table-cell">{{server.tag}}</td>
+					<td class="d-none d-md-table-cell d-lg-table-cell text-center">{{server.os}}</td>
+					<td class="d-none d-md-table-cell d-lg-table-cell text-center">{{server.num_cpu}}</td>
 					<td class="d-none d-md-table-cell d-lg-table-cell text-center">
-						{{server[6]}}mb
+						{{server.mem_total}}mb
 					</td>
 					<td class="d-none d-md-table-cell d-lg-table-cell text-center">
-						{{server[7]}}
+						{{server.num_img}}
 					</td>
 				</tr>
 			{% endfor %}
@@ -74,6 +72,7 @@
 				<th class="d-none d-md-table-cell d-lg-table-cell sort-col text-center"><b>ExposedPorts</b></th>
 				<th class="d-none d-md-table-cell d-lg-table-cell sort-col text-center"><b>CPU Limit</b></th>
 				<th class="d-none d-md-table-cell d-lg-table-cell sort-col text-center"><b>Memory Limit</b></th>
+				<th class="d-none d-md-table-cell d-lg-table-cell sort-col text-center"><b>Command</b></th>
 			</tr>
 			</thead>
 			<tbody>
@@ -81,26 +80,29 @@
 			{% for image in challenge_images %}
 			<tr>
 				<td class="d-block border-right text-center" data-checkbox>
-						<button type="button" onclick="delete_image({{image[0]}})" class="btn btn-outline-danger" data-toggle="tooltip" title="" id="challenges-delete-button" data-original-title="Delete Server">
+						<button type="button" onclick="delete_image({{image.id}})" class="btn btn-outline-danger" data-toggle="tooltip" title="" id="challenges-delete-button" data-original-title="Delete Image">
 							<i class="btn-fa fas fa-trash-alt"></i>
 						</button>
 				</td>
-				<td class="text-center">{{image[0]}}</td>
-				<td>{{image[1]}}</td>
-				<td class="d-none d-md-table-cell d-lg-table-cell">{{image[2]}}</td>
-				<td class="d-none d-md-table-cell d-lg-table-cell text-center">{{image[3][8:15]}}....</td>
-				<td class="d-none d-md-table-cell d-lg-table-cell text-center">{{image[4]}}</td>
+				<td class="text-center">{{image.id}}</td>
+				<td>{{image.name}}</td>
+				<td class="d-none d-md-table-cell d-lg-table-cell">{{image.RepoTags}}</td>
+				<td class="d-none d-md-table-cell d-lg-table-cell text-center">{{image.imageid[0:8]}}....</td>
+				<td class="d-none d-md-table-cell d-lg-table-cell text-center">{{image.created}}</td>
 				<td class="d-none d-md-table-cell d-lg-table-cell text-center">
-					{{image[5]}}mb
+					{{image.size}}mb
 				</td>
 				<td class="d-none d-md-table-cell d-lg-table-cell text-center">
-					{{image[6]}}
+					{{image.exposedports}}
 				</td>
 				<td class="d-none d-md-table-cell d-lg-table-cell text-center">
-					{{image[7]}}
+					{{image.cpuli}}
 				</td>
 				<td class="d-none d-md-table-cell d-lg-table-cell text-center">
-					{{image[8]}}mb
+					{{image.memli}}mb
+				</td>
+				<td class="d-none d-md-table-cell d-lg-table-cell text-center">
+					{{image.command}}
 				</td>
 			</tr>
 			{% endfor %}
@@ -178,7 +180,7 @@ MIIFVzCCAz+gAwIBAgIJAMd2FE4eI9j/M........
 					Chanllange Image Name
 				</small>
 			</label>
-			<input type="text" class="form-control" name="name" placeholder="web1">
+			<input required type="text" class="form-control" name="name" placeholder="web1">
 
 		</div>
 		<div class="form-group">
@@ -193,16 +195,16 @@ MIIFVzCCAz+gAwIBAgIJAMd2FE4eI9j/M........
 		</div>
 		<div class="form-group">
 			<label>
-				CPU Count Limit:<br>
+				CPU Count Limit(Effective only on Windows Server):<br>
 			</label>
-			<input type="text" class="form-control" value="1" name="cpuli" placeholder="0.5">
+			<input  required type="text" class="form-control" value="1" name="cpuli" placeholder="0.5">
 
 		</div>
 		<div class="form-group">
 			<label>
 				Memory Limit:<br>
 			</label>
-			<input type="number" value=128 class="form-control" name="memli" >mb
+			<input required type="number" value=256 class="form-control" name="memli" >mb
 
 		</div>
 		<div class="form-group">
@@ -214,7 +216,7 @@ MIIFVzCCAz+gAwIBAgIJAMd2FE4eI9j/M........
 			</small>
 			<select class="form-control custom-select" name="pullimage">
 				{% for server in servers %}
-				<option value="{{server[3]}}">{{server[3]}}</option>
+				<option value="{{server.tag}}">{{server.tag}}</option>
 				{% endfor %}
 
 			</select>
@@ -227,7 +229,17 @@ MIIFVzCCAz+gAwIBAgIJAMd2FE4eI9j/M........
 			<small class="form-text text-muted">
 				Python Format: [80,22,443]
 			</small>
-			<input type="text" class="form-control" name="exposedports" value="[80,]">
+			<input required type="text" class="form-control" name="exposedports" value="[80,]">
+
+		</div>
+		<div class="form-group">
+			<label>
+				Command:<br>
+			</label>
+			<small class="form-text text-muted">
+				Command will be excueted when container start running(Not required).
+			</small>
+			<input type="text" class="form-control" name="command" placeholder="service mysql start;service apache2 start;/bin/bash;">
 
 		</div>
 	</div>
@@ -317,7 +329,7 @@ MIIFVzCCAz+gAwIBAgIJAMd2FE4eI9j/M........
 		{% for instance in instances %}
 			<tr>
 				<td class="d-block border-right text-center" data-checkbox>
-					<button type="button" onclick="delete_instance({{instance.id}})" class="btn btn-outline-danger" data-toggle="tooltip" title="" id="challenges-delete-button" data-original-title="Delete Server">
+					<button type="button" onclick="delete_instance({{instance.id}})" class="btn btn-outline-danger" data-toggle="tooltip" title="" id="challenges-delete-button" data-original-title="Delete Instance">
 						<i class="btn-fa fas fa-trash-alt"></i>
 					</button>
 				</td>

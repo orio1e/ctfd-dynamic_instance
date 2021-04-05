@@ -52,8 +52,10 @@ class ChallengeImages(db.Model):
     memli=db.Column(db.Integer)
     pullimage=db.Column(db.VARCHAR(128))
     pulled=db.Column(db.Integer)
+    pullimage=db.Column(db.VARCHAR(128))
+    command=db.Column(db.VARCHAR(128))
 
-    def __init__(self, RepoTags, cpuli,memli,pullimage,exposedports):
+    def __init__(self,name, RepoTags,imageid, created,cpuli,memli,pullimage,size,exposedports,command):
         self.name = name
         self.RepoTags = RepoTags
         self.imageid = imageid
@@ -63,10 +65,11 @@ class ChallengeImages(db.Model):
         self.cpuli = cpuli
         self.memli = memli
         self.pullimage=pullimage
+        self.command=command
 #实例
 class Instances(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    chaid=db.Column(db.Integer,db.ForeignKey("challenges.id"))
+    chaid=db.Column(db.Integer)
     starttime=db.Column(db.VARCHAR(128))
     endtime=db.Column(db.VARCHAR(128))
     userid=db.Column(db.VARCHAR(128))
@@ -102,14 +105,9 @@ class DynamicInstanceChallenge(Challenges):
     __mapper_args__ = {"polymorphic_identity": "dynamic_instance"}
     id = db.Column(db.Integer,db.ForeignKey("challenges.id"),primary_key=True)
     ChallengeImageName=db.Column(db.VARCHAR(128))
-    #ServerID=db.Column(db.Integer)
-    username=(db.VARCHAR(128), db.ForeignKey('users.name'))
-    #memory_limit = db.Column(db.VARCHAR(50), default="128m")
-    #cpu_limit = db.Column(db.Float, default=0.5)
     #分数相关
     initial=db.Column(db.Float)
     per_decay=db.Column(db.Float)
-    #now_score=db.Column(db.Float)
     minimum=db.Column(db.Float)
     def __init__(self, *args, **kwargs):
         super(DynamicInstanceChallenge, self).__init__(**kwargs)

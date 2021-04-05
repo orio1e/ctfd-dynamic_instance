@@ -95,17 +95,25 @@ def pull_image(servertag,RepoTags):
             print(e)
             return e
     try:
-        if RepoTags in client.images.list():
-            print("Image exsists")
+        if client.images.list(name=RepoTags):
+            image=client.images.get(RepoTags)
+            imageid=image.id
+            imageid=imageid.replace('sha256:','')
+            size=int(int(image.attrs['Size'])/1048576)
+            cusor.execute(f"UPDATE challenge_images SET imageid='{imageid}',size={size},pulled=1 WHERE RepoTags='{RepoTags}';")
+            conn.commit()
+            conn.close()
             return
         repo=RepoTags[0:RepoTags.index(':')]
         tag=RepoTags[RepoTags.index(':')+1:]
         image=client.images.pull(repo,tag)
         imageid=image.id
+        imageid=imageid.replace('sha256:','')
         size=int(int(image.attrs['Size'])/1048576)
         cusor.execute(f"UPDATE challenge_images SET imageid='{imageid}',size={size},pulled=1 WHERE RepoTags='{RepoTags}';")
         conn.commit()
         conn.close()
+        return
     except Exception as e:
             print(e)
             return e

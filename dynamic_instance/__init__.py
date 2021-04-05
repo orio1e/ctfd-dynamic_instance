@@ -35,7 +35,7 @@ def load(app):
     scheduler.add_job(func=remove_timeout,id='remove_timeout',args=None,trigger='interval',seconds=60,replace_existing=True)
     scheduler.init_app(app=app)
     scheduler.start()
-    #主目录
+    #主目录 修改配置
     @page_blueprint.route('/config', methods=['GET','POST'])
     @admins_only
     def dynamic_instance_config():
@@ -74,14 +74,8 @@ def load(app):
                 conn.commit()
                 conn.close()
             return json.dumps("success!")
-        conn=sqlite3.connect("CTFd/ctfd.db")
-        cusor=conn.cursor()
-        cusor.execute("SELECT * FROM challenge_images")
-        challenge_images=cusor.fetchall()
-        cusor.execute("SELECT * FROM servers")
-        servers=cusor.fetchall()
-        conn.commit()
-        conn.close()
+        challenge_images=ChallengeImages.query.all()
+        servers=Servers.query.all()
         instances=Instances.query.all()
         return render_template('dynamic_instance.html',nonce=generate_nonce(),challenge_images=challenge_images,servers=servers,instances=instances)
     #增加 新服务器 或新镜像
@@ -131,6 +125,9 @@ def load(app):
                 RepoTags=RepoTags+":latest"
             cpuli=form['cpuli']
             memli=form['memli']
+            command=form['command']
+            if command=='':
+                command='NoCommand'
             pullimage=form['pullimage']
             exposedports=form['exposedports']
             pulled=0
@@ -139,7 +136,7 @@ def load(app):
             imageid="No Pulled yet"
             conn=sqlite3.connect("CTFd/ctfd.db")
             cusor=conn.cursor()
-            cusor.execute(f"INSERT INTO challenge_images (name,RepoTags,imageid,created,size,exposedports,cpuli,memli,pullimage,pulled) VALUES ('{name}','{RepoTags}','{imageid}','{created}','{size}','{exposedports}',{cpuli},{memli},'{pullimage}',{pulled});")
+            cusor.execute(f"INSERT INTO challenge_images (name,RepoTags,imageid,created,size,exposedports,cpuli,memli,pullimage,pulled,command) VALUES ('{name}','{RepoTags}','{imageid}','{created}','{size}','{exposedports}',{cpuli},{memli},'{pullimage}',{pulled},'{command}');")
             conn.commit()
             conn.close()
             scheduler.add_job(func=pull_image, args=(pullimage,RepoTags), trigger='date',next_run_time=datetime.datetime.now() + datetime.timedelta(seconds=5), id='pullimage',replace_existing=True)
