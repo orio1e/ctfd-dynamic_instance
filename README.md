@@ -15,7 +15,7 @@
 
 ![image-20210228151550144](https://tva1.sinaimg.cn/large/e6c9d24ely1go3ev62nm1j21pd0u0di2.jpg)
 
-### 部署 deploy
+## 部署 
 
 文件结构 file structure :
 
@@ -60,7 +60,9 @@ pip install -r requirements.txt
 
 
 
-### 配置
+### 0x01配置
+
+
 
 以admin用户打开CTFd中的Admin Panel菜单栏,选择plugins中的dynamic_instance
 
@@ -72,7 +74,7 @@ pip install -r requirements.txt
 
 在此可以选择`是否使用本地服务器`,`实例存活的时间`,`每次延长的时间`以及`实例最大的存活时间`
 
-### 添加远程docker API
+### 0x02添加远程docker API
 
 此插件采用docker remote API来连接服务器上的docker服务,需要配置TLS加密通讯,具体配置方法可以参考http://oriole.fun/index.php/archives/24/
 
@@ -80,7 +82,7 @@ pip install -r requirements.txt
 
 ![image-20210228161821146](https://tva1.sinaimg.cn/large/e6c9d24ely1go3evfaimij21r20u0wjt.jpg)
 
-### 创建题目镜像
+### 0x03创建题目镜像
 
 创建题目镜像是为了在添加题目时直接引用,题目镜像需要提前上传至dockerhub或其他公开的镜像仓库
 
@@ -90,7 +92,7 @@ pip install -r requirements.txt
 
 
 
-### 添加题目
+### 0x04添加题目
 
 添加动态靶机题目的入口和ctfd其他类型题目的添加入口在同处
 
@@ -98,7 +100,7 @@ pip install -r requirements.txt
 
 ![image-20210228162925519](https://tva1.sinaimg.cn/large/e6c9d24ely1go3fuexzaoj21dc0u0wjo.jpg)
 
-### 题目界面
+### 0x05题目界面
 
 ![image-20210228163249926](https://tva1.sinaimg.cn/large/e6c9d24ely1go3evn7rg3j20ti0qs762.jpg)
 

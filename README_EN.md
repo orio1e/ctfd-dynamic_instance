@@ -9,7 +9,8 @@
 ![image-20210228151526184]( https://tva1.sinaimg.cn/large/e6c9d24ely1go3eurmm4lj21kr0u0799.jpg )
 ![image-20210228151550144]( https://tva1.sinaimg.cn/large/e6c9d24ely1go3ev62nm1j21pd0u0di2.jpg )
 
- ### Deploy
+## Deploy
+
 File structure:
 
 ```shell
@@ -48,7 +49,7 @@ The plug-in will start when ctfd is started
 
 
 
-### Configuration
+### 0x01Configuration
 Open the admin panel menu bar in ctfd by admin user, and select dynamic in plugins_ instance
 ![image-20210228154717387]( https://tva1.sinaimg.cn/large/008eGmZEly1go7zevb2abj31ks07wmy8.jpg )
 
@@ -56,7 +57,7 @@ Drop down to the 'config' section
 ![image-20210228154905960]( https://tva1.sinaimg.cn/large/e6c9d24ely1go3evc3x6dj21ql0u0aeb.jpg )
 Here, you can choose whether to use local server, time of instance survival, time of extension each time and maximum lifetime of instance`
 
-### Add remote docker API
+### 0x02Add remote docker API
 This plug-in uses docker remote API to connect to docker service on the server. TLS encryption communication needs to be configured. Please refer to the specific configuration method http://oriole.fun/index.php/archives/24/
 The contents are as follows:
 
@@ -64,21 +65,21 @@ The contents are as follows:
 
 ![image-20210228161821146](https://tva1.sinaimg.cn/large/e6c9d24ely1go3evfaimij21r20u0wjt.jpg )
 
-### Create a title image
+### 0x03Create a title image
 The title image is created to directly reference when adding a title. The title image needs to be uploaded to dockerhub or other public image warehouse in advance
 The details are as follows
 ![image-20210228162308728]( https://tva1.sinaimg.cn/large/e6c9d24ely1go3evjkpn0j21lb0u0gsm.jpg )
 
 
 
-### Add a challnge
+### 0x04Add a challnge
 The entry of adding dynamic target subject and other types of ctfd are in the same place
 The following contents are required to be set separately for the dynamic target
 ![image-20210228162925519]( https://tva1.sinaimg.cn/large/e6c9d24ely1go3fuexzaoj21dc0u0wjo.jpg )
 
 
 
-### Title Challenge Pannel
+### 0x05Title Challenge Pannel
 ![image-20210228163249926]( https://tva1.sinaimg.cn/large/e6c9d24ely1go3evn7rg3j20ti0qs762.jpg )
 
 ![image-20210228163424274]( https://tva1.sinaimg.cn/large/e6c9d24ely1go3evpzr87j20to136gpt.jpg )

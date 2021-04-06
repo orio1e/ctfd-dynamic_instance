@@ -170,6 +170,7 @@ MIIFVzCCAz+gAwIBAgIJAMd2FE4eI9j/M........
 <div >
 	<h3>&nbsp;&nbsp;Create Challenge Image</h3><br>
 </div>
+{%if servers %}
 <div class="col-md-10">
 <form method="POST" id="createimageform" >
 	<div class="container">
@@ -250,6 +251,11 @@ MIIFVzCCAz+gAwIBAgIJAMd2FE4eI9j/M........
 
 </form>
 </div>
+{% else %}
+<div >
+	<h4>&nbsp;&nbsp;Create A remote docker server or set local docker server in config pannel first.</h4><br>
+</div>
+{% endif %}
 <br><br><br><br><br>
 <div >
 	<h3>&nbsp;&nbsp;Config</h3><br>
