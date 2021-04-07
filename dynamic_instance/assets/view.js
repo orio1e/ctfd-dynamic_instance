@@ -144,6 +144,11 @@ function boot() {
 function destroy() {
     askbooting=setInterval(info,1000);
     var challenge_id = parseInt(CTFd.lib.$('#challenge-id').val())
+    CTFd.ui.ezq.ezAlert({
+        title: "INFO",
+        body: 'Stopping Instance.',
+        button: "OK"
+    });
     CTFd.fetch("/plugins/dynamic_instance/instance/"+challenge_id+"?type=destroy", {
         method: 'GET',
         credentials: 'same-origin',
@@ -160,11 +165,8 @@ function destroy() {
         }
         return response.json();
     }).then(function(response) {
-        CTFd.ui.ezq.ezAlert({
-            title: "INFO",
-            body: response,
-            button: "OK"
-        });
+        
+        window.location.reload();
     });
 }
 function extense() {
@@ -194,7 +196,12 @@ function extense() {
     });
 }
 function reload() {
-    var challenge_id = parseInt(CTFd.lib.$('#challenge-id').val())
+    var challenge_id = parseInt(CTFd.lib.$('#challenge-id').val());
+    CTFd.ui.ezq.ezAlert({
+        title: "INFO",
+        body: 'Reloading.',
+        button: "OK"
+    });
     CTFd.fetch("/plugins/dynamic_instance/instance/"+challenge_id+"?type=reload", {
         method: 'GET',
         credentials: 'same-origin',

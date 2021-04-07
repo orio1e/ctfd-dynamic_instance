@@ -72,7 +72,6 @@
 				<th class="d-none d-md-table-cell d-lg-table-cell sort-col text-center"><b>ExposedPorts</b></th>
 				<th class="d-none d-md-table-cell d-lg-table-cell sort-col text-center"><b>CPU Limit</b></th>
 				<th class="d-none d-md-table-cell d-lg-table-cell sort-col text-center"><b>Memory Limit</b></th>
-				<th class="d-none d-md-table-cell d-lg-table-cell sort-col text-center"><b>Command</b></th>
 			</tr>
 			</thead>
 			<tbody>
@@ -87,7 +86,7 @@
 				<td class="text-center">{{image.id}}</td>
 				<td>{{image.name}}</td>
 				<td class="d-none d-md-table-cell d-lg-table-cell">{{image.RepoTags}}</td>
-				<td class="d-none d-md-table-cell d-lg-table-cell text-center">{{image.imageid[0:8]}}....</td>
+				<td class="d-none d-md-table-cell d-lg-table-cell text-center">{{image.imageid[0:16]}}</td>
 				<td class="d-none d-md-table-cell d-lg-table-cell text-center">{{image.created}}</td>
 				<td class="d-none d-md-table-cell d-lg-table-cell text-center">
 					{{image.size}}mb
@@ -100,9 +99,6 @@
 				</td>
 				<td class="d-none d-md-table-cell d-lg-table-cell text-center">
 					{{image.memli}}mb
-				</td>
-				<td class="d-none d-md-table-cell d-lg-table-cell text-center">
-					{{image.command}}
 				</td>
 			</tr>
 			{% endfor %}
@@ -191,7 +187,7 @@ MIIFVzCCAz+gAwIBAgIJAMd2FE4eI9j/M........
 					Reponstory:Tag(default latest) on dockerhub
 				</small>
 			</label>
-			<input type="text" class="form-control" name="RepoTags" placeholder="Reponstory:Tag">
+			<input  required type="text" class="form-control" name="RepoTags" placeholder="Reponstory:Tag">
 
 		</div>
 		<div class="form-group">
@@ -233,16 +229,7 @@ MIIFVzCCAz+gAwIBAgIJAMd2FE4eI9j/M........
 			<input required type="text" class="form-control" name="exposedports" value="[80,]">
 
 		</div>
-		<div class="form-group">
-			<label>
-				Command:<br>
-			</label>
-			<small class="form-text text-muted">
-				Command will be excueted when container start running(Not required).
-			</small>
-			<input type="text" class="form-control" name="command" placeholder="service mysql start;service apache2 start;/bin/bash;">
 
-		</div>
 	</div>
 	<input name="type" value="new_img" hidden>
 	<div class="form-group">
@@ -322,7 +309,7 @@ MIIFVzCCAz+gAwIBAgIJAMd2FE4eI9j/M........
 			<th></th>
 			<th class="sort-col text-center"><b>Id</b></th>
 			<th class="sort-col"><b>challengeId</b></th>
-			<th class="sort-col"><b>EndTime</b></th>
+			<th class="sort-col"><b>RemainTime</b></th>
 			<th class="d-none d-md-table-cell d-lg-table-cell sort-col"><b>UserId</b></th>
 			<th class="d-none d-md-table-cell d-lg-table-cell sort-col text-center"><b>ImageName</b></th>
 			<th class="d-none d-md-table-cell d-lg-table-cell sort-col text-center"><b>ContainerName</b></th>
@@ -341,7 +328,7 @@ MIIFVzCCAz+gAwIBAgIJAMd2FE4eI9j/M........
 				</td>
 				<td class="text-center">{{instance.id}}</td>
 				<td>{{instance.chaid}}</td>
-				<td class="d-none d-md-table-cell d-lg-table-cell">	{{instance.endtime}}</script>
+				<td class="d-none d-md-table-cell d-lg-table-cell">	{{int(instance.endtime)-int(instance.starttime)}}</script>
 				</td>
 				<td class="d-none d-md-table-cell d-lg-table-cell text-center">{{instance.userid}}</td>
 				<td class="d-none d-md-table-cell d-lg-table-cell text-center">{{instance.imagename}}</td>

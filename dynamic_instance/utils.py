@@ -82,28 +82,19 @@ def pull_image(servertag,RepoTags):
     cusor.execute("SELECT socket,client_cert_file,client_key_file FROM servers  WHERE tag ='{}' ;".format(servertag))
     socket,client_cert_file,client_key_file=cusor.fetchone()
     if servertag=="local":
-        try:
-            client=docker.from_env()
-        except Exception as e:
-            print(e)
-            return e
+        client=docker.from_env()
     else:
         tls_config = docker.tls.TLSConfig(client_cert=(client_cert_file,client_key_file))
-        try:
-            client=docker.DockerClient(base_url=socket,tls=tls_config)
-        except Exception as e:
-            print(e)
-            return e
+    if client.images.list(name=RepoTags):
+        image=client.images.get(RepoTags)
+        imageid=image.id
+        imageid=imageid.replace('sha256:','')
+        size=int(int(image.attrs['Size'])/1048576)
+        cusor.execute(f"UPDATE challenge_images SET imageid='{imageid}',size={size},pulled=1 WHERE RepoTags='{RepoTags}';")
+        conn.commit()
+        conn.close()
+        return
     try:
-        if client.images.list(name=RepoTags):
-            image=client.images.get(RepoTags)
-            imageid=image.id
-            imageid=imageid.replace('sha256:','')
-            size=int(int(image.attrs['Size'])/1048576)
-            cusor.execute(f"UPDATE challenge_images SET imageid='{imageid}',size={size},pulled=1 WHERE RepoTags='{RepoTags}';")
-            conn.commit()
-            conn.close()
-            return
         repo=RepoTags[0:RepoTags.index(':')]
         tag=RepoTags[RepoTags.index(':')+1:]
         image=client.images.pull(repo,tag)
@@ -115,6 +106,11 @@ def pull_image(servertag,RepoTags):
         conn.close()
         return
     except Exception as e:
-            print(e)
-            return e
+        imageid='Pull Fail!'
+        cusor.execute(f"UPDATE challenge_images SET imageid='{imageid}',size=0,pulled=0 WHERE RepoTags='{RepoTags}';")
+        conn.commit()
+        conn.close()
+        print(e)
+
+        return 
     

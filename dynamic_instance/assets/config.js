@@ -122,10 +122,10 @@ function delete_instance(instance_id) {
         button: "OK"
     }))
     .catch(err => console.log('Request Failed', err)); 
-
-
-
 }
+
+
+
 
     
 	

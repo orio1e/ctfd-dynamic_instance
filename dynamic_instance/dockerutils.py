@@ -4,6 +4,7 @@ from .models import *
 import random
 import os 
 import socket
+import json
 
 #获取随机端口
 def randomport(port,ip):
@@ -27,7 +28,7 @@ def randomport(port,ip):
             return out_port
 #创建 延长 重载 销毁实例
 class Instance:
-    
+    #创建实例
     @classmethod
     def bootinstance(cls,imagename,instanceid):
         print("booting instance")        
@@ -53,31 +54,16 @@ class Instance:
                 for port in exposedports:
                     out_port=randomport(port,server.host)
                     portmap['{}/tcp'.format(port)]=out_port
-                #分为有命令的run 和没有命令的run
-                if image.command !="NoCommand":
-                    #有命令
-                    command=image.command
-                    container=client.containers.run(
-                        image=image.RepoTags,
-                        name=instance.containername,
-                        command=command,
-                        ports=portmap,
-                        mem_limit=str(image.memli)+'m',
-                        cpu_count=int(int(image.cpuli)*1e9),
-                        detach=True,
-                        oom_kill_disable=True
-                    )
-                else:
-                    #无命令
-                    container=client.containers.run(
-                        image=image.RepoTags,
-                        name=instance.containername,
-                        ports=portmap,
-                        mem_limit=str(image.memli)+'m',
-                        cpu_count=int(int(image.cpuli)*1e9),
-                        detach=True,
-                        oom_kill_disable=True
-                    )
+            
+                container=client.containers.run(
+                    image=image.RepoTags,
+                    name=instance.containername,
+                    ports=portmap,
+                    mem_limit=str(image.memli)+'m',
+                    cpu_count=int(int(image.cpuli)*1e9),
+                    detach=True,
+                    oom_kill_disable=True
+                )
 
                 print("Instance Start! "+container.status)
                 instance.startup=1
@@ -94,6 +80,7 @@ class Instance:
             db.session.commit()
     
             return json.dumps("fail: {}".format(e))
+    #销毁实例
     @classmethod
     def destroy_instance(cls,instanceid):
         
@@ -121,6 +108,7 @@ class Instance:
             db.session.delete(instance)
             db.session.commit()
             return json.dumps("fail: container destroy error: {}".format(e))
+    #重载实例
     @classmethod
     def reload(cls,instanceid):
         try:
@@ -142,23 +130,7 @@ class Instance:
                     db.session.commit()
                     return json.dumps("Containner not exists!Please contact with admin!")
 
-            #分为有命令的run 和没有命令的run
-            if image.command !="NoCommand":
-                #有命令
-                command=image.command
-                container=client.containers.run(
-                    image=image.RepoTags,
-                    name=instance.containername,
-                    command=command,
-                    ports=portmap,
-                    mem_limit=str(image.memli)+'m',
-                    cpu_count=int(int(image.cpuli)*1e9),
-                    detach=True,
-                    oom_kill_disable=True
-                )
-            else:
-                #无命令
-                container=client.containers.run(
+            container=client.containers.run(
                     image=image.RepoTags,
                     name=instance.containername,
                     ports=portmap,
@@ -172,6 +144,21 @@ class Instance:
             db.session.delete(instance)
             db.session.commit()
             return json.dumps("fail: container reload error: {}".format(e))
-                
-                
-            
+    #检查镜像是否本地存在
+    '''@classmethod
+    def search_local(cls,pullimage,RepoTags):
+        try:
+            server=Servers.query.filter_by(tag=image.pullimage).first()
+            if server.tag=="local":
+                client=docker.from_env()
+            else:
+                tls_config = docker.tls.TLSConfig(client_cert=(server.client_cert_file, server.client_key_file))
+                client=docker.DockerClient(base_url=server.socket,tls=tls_config)
+            #判断是否在本地
+            if client.images.list(name=RepoTags):
+                return True
+            else:
+                return False
+        except Exception as e:
+            return False
+        '''

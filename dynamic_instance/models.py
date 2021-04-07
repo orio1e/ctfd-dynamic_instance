@@ -45,7 +45,7 @@ class ChallengeImages(db.Model):
     name = db.Column(db.VARCHAR(128))
     RepoTags = db.Column(db.VARCHAR(128))
     imageid = db.Column(db.VARCHAR(128))
-    created = db.Column(db.DateTime)
+    created = db.Column(db.VARCHAR(128))
     size=db.Column(db.Integer)
     exposedports=db.Column(db.VARCHAR(128))
     cpuli = db.Column(db.Integer)
@@ -53,9 +53,8 @@ class ChallengeImages(db.Model):
     pullimage=db.Column(db.VARCHAR(128))
     pulled=db.Column(db.Integer)
     pullimage=db.Column(db.VARCHAR(128))
-    command=db.Column(db.VARCHAR(128))
 
-    def __init__(self,name, RepoTags,imageid, created,cpuli,memli,pullimage,size,exposedports,command):
+    def __init__(self,name, RepoTags,imageid, created,cpuli,memli,pullimage,size,exposedports):
         self.name = name
         self.RepoTags = RepoTags
         self.imageid = imageid
@@ -65,7 +64,6 @@ class ChallengeImages(db.Model):
         self.cpuli = cpuli
         self.memli = memli
         self.pullimage=pullimage
-        self.command=command
 #实例
 class Instances(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -90,15 +88,6 @@ class Instances(db.Model):
         self.containerid = containerid
         self.host = host
         self.portmap = portmap
-#端口占用
-'''
-class PortOccupy(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    serverid=db.Column(db.Integer)
-    port=db.Column(db.VARCHAR(128))
-    def __init__(self,serverid,port):
-        self.serverid=serverid
-        self.port = port'''
         
 #动态靶机挑战类型
 class DynamicInstanceChallenge(Challenges):

@@ -18,6 +18,8 @@ import datetime
 import json
 import hashlib
 import os
+import re 
+
 
 
 challenge_model = DynamicInstance
@@ -122,24 +124,24 @@ def load(app):
         elif form['type']=="new_img":
             name=form['name']
             RepoTags=form['RepoTags']
+            if re.match(r'.*:$',RepoTags):
+               return json.dumps("Wrong syntax of repository name!")      
             if ':' not in RepoTags:
                 RepoTags=RepoTags+":latest"
             cpuli=form['cpuli']
             memli=form['memli']
-            command=form['command']
-            if command=='':
-                command='NoCommand'
+    
             pullimage=form['pullimage']
             exposedports=form['exposedports']
             pulled=0
             created=time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
             size=0
-            imageid="No Pulled yet"
-            conn=sqlite3.connect("CTFd/ctfd.db")
-            cusor=conn.cursor()
-            cusor.execute(f"INSERT INTO challenge_images (name,RepoTags,imageid,created,size,exposedports,cpuli,memli,pullimage,pulled,command) VALUES ('{name}','{RepoTags}','{imageid}','{created}','{size}','{exposedports}',{cpuli},{memli},'{pullimage}',{pulled},'{command}');")
-            conn.commit()
-            conn.close()
+            imageid="Pulling"
+            #检查本地或dockerhub上是否存在该镜像
+            
+            newImage=ChallengeImages(name,RepoTags,imageid,created,cpuli,memli,pullimage,size,exposedports)
+            db.session.add(newImage)
+            db.session.commit()
             scheduler.add_job(func=pull_image, args=(pullimage,RepoTags), trigger='date',next_run_time=datetime.datetime.now() + datetime.timedelta(seconds=5), id='pullimage',replace_existing=True)
   
             #pull_image(pullimage,RepoTags)
@@ -171,7 +173,7 @@ def load(app):
         result=Instance.destroy_instance(instance_id)
         return result
     #为管理员 重载 销毁靶机
-    @admin_only
+    @admins_only
     @page_blueprint.route('/manager_instance/<int:instance_id>', methods=['GET'])
     def manager_instance(instance_id):
         type=request.args.get('type')
