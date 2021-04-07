@@ -18,7 +18,8 @@ import datetime
 import json
 import hashlib
 import os
-import math
+
+
 challenge_model = DynamicInstance
 def load(app):
     app.db.create_all()
@@ -169,9 +170,20 @@ def load(app):
     def delinstance(instance_id):
         result=Instance.destroy_instance(instance_id)
         return result
-
-
-    #为用户 创建 重载 延长 销毁靶机
+    #为管理员 重载 销毁靶机
+    @admin_only
+    @page_blueprint.route('/manager_instance/<int:instance_id>', methods=['GET'])
+    def manager_instance(instance_id):
+        type=request.args.get('type')
+        if type=="destroy":
+            result=Instance.destroy_instance(instance_id)
+            return result
+        elif type=="reload":
+            result=Instance.reload(instance_id)
+            return result
+        else:
+            return "No Hack!"
+    #为用户 查看 创建 重载 延长 销毁靶机
     @authed_only
     @page_blueprint.route('/instance/<int:challenge_id>', methods=['GET'])
     def instance(challenge_id):
@@ -223,7 +235,7 @@ def load(app):
             instance=Instances.query.filter_by(chaid=challenge_id,userid=userid).first()
             result=Instance.destroy_instance(instance.id)
             return result
-        if type=="exttime":
+        elif type=="exttime":
             instance=Instances.query.filter_by(chaid=challenge_id,userid=userid).first()
             config=load_config()
             instance.endtime=str(float(instance.endtime)+float(config['exttime'])*60)
@@ -234,12 +246,16 @@ def load(app):
                 db.session.commit()
                 db.session.close()
                 return json.dumps('More Time')
-        if type=="reload":
+        elif type=="reload":
             instance=Instances.query.filter_by(chaid=challenge_id,userid=userid).first()
             result=Instance.reload(instance.id)
             return result
         else:
             return "No Hack!"
+    
+    
+    
+    
     app.register_blueprint(page_blueprint,url_prefix='/plugins/dynamic_instance')
 
    
