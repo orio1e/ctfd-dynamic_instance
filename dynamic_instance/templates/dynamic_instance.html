@@ -309,7 +309,7 @@ MIIFVzCCAz+gAwIBAgIJAMd2FE4eI9j/M........
 			<th></th>
 			<th class="sort-col text-center"><b>Id</b></th>
 			<th class="sort-col"><b>challengeId</b></th>
-			<th class="sort-col"><b>RemainTime</b></th>
+			<th class="sort-col"><b>TotalTime</b></th>
 			<th class="d-none d-md-table-cell d-lg-table-cell sort-col"><b>UserId</b></th>
 			<th class="d-none d-md-table-cell d-lg-table-cell sort-col text-center"><b>ImageName</b></th>
 			<th class="d-none d-md-table-cell d-lg-table-cell sort-col text-center"><b>ContainerName</b></th>
@@ -328,7 +328,7 @@ MIIFVzCCAz+gAwIBAgIJAMd2FE4eI9j/M........
 				</td>
 				<td class="text-center">{{instance.id}}</td>
 				<td>{{instance.chaid}}</td>
-				<td class="d-none d-md-table-cell d-lg-table-cell">	{{int(instance.endtime)-int(instance.starttime)}}</script>
+				<td class="d-none d-md-table-cell d-lg-table-cell">	{{((instance.endtime|int)-(instance.starttime|int))/60}}&nbsp;Minutes</script>
 				</td>
 				<td class="d-none d-md-table-cell d-lg-table-cell text-center">{{instance.userid}}</td>
 				<td class="d-none d-md-table-cell d-lg-table-cell text-center">{{instance.imagename}}</td>

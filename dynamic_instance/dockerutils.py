@@ -62,6 +62,7 @@ class Instance:
                     mem_limit=str(image.memli)+'m',
                     cpu_count=int(int(image.cpuli)*1e9),
                     detach=True,
+                    tty=True,
                     oom_kill_disable=True
                 )
 
@@ -137,6 +138,7 @@ class Instance:
                     mem_limit=str(image.memli)+'m',
                     cpu_count=int(int(image.cpuli)*1e9),
                     detach=True,
+                    tty=True,
                     oom_kill_disable=True
                 )
             return json.dumps("Reload success!")
