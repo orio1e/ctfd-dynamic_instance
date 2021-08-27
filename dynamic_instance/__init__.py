@@ -1,11 +1,11 @@
 #-*- coding:utf-8 -*-
-from flask import Blueprint, render_template, request,session
+from flask import Blueprint, render_template, request
 from CTFd.plugins import register_plugin_assets_directory
-from CTFd.plugins.challenges import CHALLENGE_CLASSES,BaseChallenge
+from CTFd.plugins.challenges import CHALLENGE_CLASSES
 from CTFd.utils import user as current_user
 from CTFd.utils.security.csrf import generate_nonce
 from CTFd.utils.decorators import admins_only, authed_only
-from CTFd.models import Challenges, Solves, db
+from CTFd.models import db
 from CTFd.utils.modes import get_model
 from .models import *
 from flask_apscheduler import APScheduler
@@ -38,6 +38,7 @@ def load(app):
     scheduler.add_job(func=remove_timeout,id='remove_timeout',args=None,trigger='interval',seconds=60,replace_existing=True)
     scheduler.init_app(app=app)
     scheduler.start()
+    print('-------------------APScheduler Start-------------------')
     #主目录 修改配置
     @page_blueprint.route('/config', methods=['GET','POST'])
     @admins_only
@@ -227,6 +228,7 @@ def load(app):
             containerid=""#在实例启动时赋值
             host=""#在实例启动时赋值
             portmap=""#在实例启动时赋值
+            
             new_instance=Instances(chaid,starttime,endtime,userid,startup,imagename,containername,containerid,host,portmap)
             db.session.add(new_instance)
             db.session.commit()

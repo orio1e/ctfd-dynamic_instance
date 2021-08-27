@@ -2,9 +2,9 @@
 import os
 import docker
 from .models import *
-from CTFd.models import Challenges, db
+from CTFd.models import db
 import time
-from.dockerutils import Instance
+#from.dockerutils import Instance
 import json
 import sqlite3
 #from apscheduler.schedulers.blocking import BlockingScheduler
@@ -34,7 +34,7 @@ def load_config():
 
 
 def remove_timeout():
-    #print("INFO [plugin] Remove timeout instances")
+    print("INFO [plugin] Remove timeout instances")
     conn=sqlite3.connect("CTFd/ctfd.db")
     cusor=conn.cursor()
     cusor.execute("SELECT imagename,containerid,id FROM instances  WHERE endtime <={} ;".format(time.time()))
@@ -46,7 +46,6 @@ def remove_timeout():
             cusor.execute("SELECT pullimage FROM challenge_images WHERE name='{}';".format(instance[0]))
             select_servertag=cusor.fetchone()
             servertag=select_servertag[0]
-            print(servertag)
             cusor.execute("SELECT socket,client_cert_file,client_key_file FROM servers  WHERE tag ='{}' ;".format(servertag))
             socket,client_cert_file,client_key_file=cusor.fetchone()
             if servertag=="local":

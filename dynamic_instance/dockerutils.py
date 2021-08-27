@@ -85,9 +85,9 @@ class Instance:
     @classmethod
     def destroy_instance(cls,instanceid):
         
-        try:
+        try :
             instance=Instances.query.filter_by(id=instanceid).first()
-            image=ChallengeImages.query.filter_by(id=instance.chaid).first()
+            image=ChallengeImages.query.filter_by(name=instance.imagename).first()
             server=Servers.query.filter_by(tag=image.pullimage).first()
             if server.tag=="local":
                 client=docker.from_env()
@@ -106,6 +106,15 @@ class Instance:
             db.session.commit()
             return json.dumps("Remove success!")
         except Exception as e:
+            print(e)
+            '''try:#尝试从本地删除容器
+                instance=Instances.query.filter_by(id=instanceid).first()
+                client=docker.from_env()
+                rm=client.containers.get(instance.containername)
+                rm.stop()
+                rm.remove()
+            except Exception as e:
+                print(e)'''
             db.session.delete(instance)
             db.session.commit()
             return json.dumps("fail: container destroy error: {}".format(e))
@@ -114,7 +123,7 @@ class Instance:
     def reload(cls,instanceid):
         try:
             instance=Instances.query.filter_by(id=instanceid).first()
-            image=ChallengeImages.query.filter_by(id=instance.chaid).first()
+            image=ChallengeImages.query.filter_by(name=instance.imagename).first()
             server=Servers.query.filter_by(tag=image.pullimage).first()
             if server.tag=="local":
                 client=docker.from_env()
